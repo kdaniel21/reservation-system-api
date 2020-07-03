@@ -124,31 +124,46 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
   // Check if refreshToken and accessToken was provided
   const { accessToken } = req.body;
   const { refreshToken } = req.body || req.cookies;
-  if (!refreshToken || !accessToken)
-    return next(
-      new AppError('No refresh token or old access token was provided', 400)
+  if (!refreshToken)
+    return next(new AppError('No refresh token was provided', 400));
+
+  let decodedAccessToken;
+  let user;
+  if (accessToken) {
+    // Decode old token
+    decodedAccessToken = jwt.verify(accessToken, process.env.JWT_SECRET, {
+      ignoreExpiration: true,
+    });
+    // Delete everything but the payload
+    delete decodedAccessToken.iat;
+    delete decodedAccessToken.exp;
+
+    // Get all refresh token belonging to the user
+    user = await User.findById(decodedAccessToken.id).select('refreshTokens');
+
+    // Validate refresh token
+    const isRefreshTokenValid = await user.isRefreshTokenValid(
+      refreshToken,
+      user.refreshTokens
     );
+    if (!isRefreshTokenValid)
+      return next(new AppError('Refresh token not valid!', 401));
+  } else {
+    // If no refresh token was provided
+    // Get user based on refresh token
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(refreshToken)
+      .digest('hex');
 
-  // Decode old token
-  const decodedAccessToken = jwt.verify(accessToken, process.env.JWT_SECRET, {
-    ignoreExpiration: true,
-  });
-  // Delete everything but the payload
-  delete decodedAccessToken.iat;
-  delete decodedAccessToken.exp;
+    user = await User.findOne({
+      refreshTokens: { $elemMatch: { token: hashedToken } },
+    });
 
-  // Get all refresh token belonging to the user
-  const user = await User.findById(decodedAccessToken.id).select(
-    'refreshTokens'
-  );
+    decodedAccessToken = { _id: user._id, role: user.role };
+  }
 
-  // Validate refresh token
-  const isRefreshTokenValid = await user.isRefreshTokenValid(
-    refreshToken,
-    user.refreshTokens
-  );
-  if (!isRefreshTokenValid)
-    return next(new AppError('Refresh token not valid!', 401));
+  if (!user) return next(new AppError('Refresh token not valid!', 401));
 
   // Create lastActive timestamp
   await user.markAsActive();
