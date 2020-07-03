@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const authRouter = require('./routes/authRoutes');
 const invitationRouter = require('./routes/invitationRoutes');
@@ -13,7 +14,6 @@ const postRouter = require('./routes/postRoutes');
 const contactRouter = require('./routes/contactRoutes');
 const reservationRouter = require('./routes/reservationRoutes');
 const errorController = require('./controllers/errorController');
-
 const AppError = require('./utils/appError');
 
 const app = express();
@@ -39,6 +39,7 @@ app.use(xss());
 app.use(hpp());
 // TODO: add whitelist
 // app.use('/search', hpp({ whitelist: [ 'filter' ] })); -- WHITELISTING
+app.use(cookieParser());
 
 // ROUTES
 app.use('/api/v1/auth', authRouter);
