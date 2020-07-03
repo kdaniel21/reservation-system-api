@@ -61,10 +61,11 @@ exports.register = catchAsync(async (req, res, next) => {
 
   // Create new user
   const { password, passwordConfirm } = req.body;
+  const name = req.body.name || invitation.userName;
 
   const newUser = await User.create({
     email: invitation.userEmail,
-    name: invitation.userName,
+    name,
     password,
     passwordConfirm,
     invitedBy: invitation.createdBy,
