@@ -75,14 +75,7 @@ exports.register = catchAsync(async (req, res, next) => {
   await invitation.deactivate();
 
   // Log in user
-  const { accessToken, refreshToken } = await loginUser(newUser);
-
-  res.status(201).json({
-    status: 'success',
-    message: 'User created successfully!',
-    accessToken,
-    refreshToken,
-  });
+  await loginUser(newUser);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
