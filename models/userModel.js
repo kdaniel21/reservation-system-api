@@ -154,7 +154,8 @@ userSchema.methods.generateRefreshToken = async function () {
   // Create refreshToken object with 1 month validity
   const refreshToken = {
     token: hashedToken,
-    expiration: Date.now() + 30 * 24 * 60 * 60 * 1000,
+    expiration:
+      Date.now() + process.env.REFRESH_TOKEN_EXPIRES * 24 * 60 * 60 * 1000,
   };
 
   // Save hashed refresh token to the DB

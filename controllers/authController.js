@@ -17,6 +17,16 @@ const loginUser = async (user, statusCode, res) => {
   const accessToken = signJWT({ id: user._id, role: user.role });
   const refreshToken = await user.generateRefreshToken();
 
+  // Set refresh token cookie
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.REFRESH_TOKEN_EXPIRES + 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
+  };
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
   // Remove unwanted fields from the user
   const cleanedUser = { ...user.toObject() };
   delete cleanedUser.password;
@@ -110,7 +120,8 @@ exports.restrictTo = (...roles) => (req, res, next) => {
 
 exports.refreshToken = catchAsync(async (req, res, next) => {
   // Check if refreshToken and accessToken was provided
-  const { refreshToken, accessToken } = req.body;
+  const { accessToken } = req.body;
+  const { refreshToken } = req.body || req.cookies;
   if (!refreshToken || !accessToken)
     return next(
       new AppError('No refresh token or old access token was provided', 400)
