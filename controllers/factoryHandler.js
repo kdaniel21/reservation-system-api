@@ -70,15 +70,17 @@ exports.updateOne = (Model) =>
 exports.getAll = (Model, options) =>
   catchAsync(async (req, res, next) => {
     let query = Model.find({});
+    let sortBy;
 
     // Additional options
     if (options) {
       if (options.queryCondition) query = query.find(options.queryCondition);
       if (options.populate) query = query.populate(options.populate);
       if (options.select) query = query.select(options.select);
+      if (options.defaultSortBy) sortBy = options.defaultSortBy;
     }
 
-    const features = new ApiFeatures(query, req.query, options.defaultSortBy)
+    const features = new ApiFeatures(query, req.query, sortBy)
       .filter()
       .paginate()
       .limit()
