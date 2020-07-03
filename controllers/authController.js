@@ -17,8 +17,15 @@ const loginUser = async (user, statusCode, res) => {
   const accessToken = signJWT({ id: user._id, role: user.role });
   const refreshToken = await user.generateRefreshToken();
 
+  // Remove unwanted fields from the user
+  const cleanedUser = { ...user.toObject() };
+  delete cleanedUser.password;
+  delete cleanedUser.updatedAt;
+  delete cleanedUser.refreshTokens;
+
   res.status(statusCode).json({
     status: 'success',
+    user: cleanedUser,
     accessToken,
     refreshToken,
   });
