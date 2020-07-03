@@ -70,6 +70,7 @@ const userSchema = mongoose.Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
@@ -86,7 +87,7 @@ userSchema.pre('save', async function (next) {
 
 // Hide __v field from queries
 userSchema.pre(/^find/, function (next) {
-  this.select('-__v');
+  // this.select('-__v');
   next();
 });
 
