@@ -4,7 +4,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.get('/:id', invitationController.getInvitation);
+router.get('/:token', invitationController.getInvitation);
 
 router.use(authController.protect);
 router.use(authController.restrictTo('admin'));
