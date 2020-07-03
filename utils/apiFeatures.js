@@ -2,7 +2,7 @@ module.exports = class APIFeatures {
   constructor(query, queryString, defaultSortBy) {
     this.query = query;
     this.queryString = queryString;
-    this.defaultSortBy = defaultSortBy;
+    this.defaultSortBy = defaultSortBy || '-createdAt';
   }
 
   filter() {
@@ -22,7 +22,7 @@ module.exports = class APIFeatures {
   }
 
   sort() {
-    let sortBy = this.defaultSortBy || '-createdAt';
+    let sortBy = this.defaultSortBy;
 
     if (this.queryString.sort)
       sortBy = this.queryString.sort.replace(/,/g, ' ');
