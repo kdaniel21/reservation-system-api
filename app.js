@@ -6,6 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const authRouter = require('./routes/authRoutes');
 const invitationRouter = require('./routes/invitationRoutes');
@@ -37,8 +38,11 @@ app.use(mongoSanitize());
 app.use(xss());
 // Parameter pollution
 app.use(hpp());
+// Enable CORS
+app.use(cors());
 // TODO: add whitelist
 // app.use('/search', hpp({ whitelist: [ 'filter' ] })); -- WHITELISTING
+// Parse cookies
 app.use(cookieParser());
 
 // ROUTES
