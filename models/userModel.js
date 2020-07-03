@@ -84,6 +84,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// Hide __v field from queries
+userSchema.pre(/^find/, function (next) {
+  this.select('-__v');
+  next();
+});
+
 // Filter out not active users
 userSchema.pre(/^find/, function (next) {
   this.find({ active: true });
