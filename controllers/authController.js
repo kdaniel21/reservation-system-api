@@ -75,7 +75,7 @@ exports.register = catchAsync(async (req, res, next) => {
   await invitation.deactivate();
 
   // Log in user
-  await loginUser(newUser);
+  await loginUser(newUser, 200, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
