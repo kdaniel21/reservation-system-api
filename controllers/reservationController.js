@@ -147,6 +147,7 @@ exports.updateRecurringReservation = catchAsync(async (req, res, next) => {
     const reservations = await Reservation.find({
       recurringId,
       startsAt: { $gte: selectedReservation.startsAt },
+      active: true,
     });
 
     datesNotAvailable = [];
@@ -155,6 +156,7 @@ exports.updateRecurringReservation = catchAsync(async (req, res, next) => {
     for (const reservation of reservations) {
       // Modify reservation
       Object.keys(modifiedReservation).forEach((key) => {
+        if (['_id'].includes(key)) return; // list of properties that won't be copied
         reservation[key] = modifiedReservation[key];
       });
 
@@ -207,7 +209,7 @@ exports.deleteRecurringReservation = catchAsync(async (req, res, next) => {
   });
 });
 
-// Expects startsAt, endsAt, place
+// Expects startsAt, endsAt, place, id?
 exports.checkAvailability = catchAsync(async (req, res, next) => {
   const isAvailable = await isTimeAvailable(req.body);
 
