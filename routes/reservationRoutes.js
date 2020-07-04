@@ -12,6 +12,8 @@ router
   .get(reservationController.getAllReservations)
   .post(reservationController.createReservation);
 
+router.post('/available', reservationController.checkAvailability);
+
 router
   .route('/recurring')
   .post(reservationController.createRecurringReservation)
