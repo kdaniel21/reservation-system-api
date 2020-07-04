@@ -39,7 +39,7 @@ app.use(xss());
 // Parameter pollution
 app.use(hpp());
 // Enable CORS
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 // TODO: add whitelist
 // app.use('/search', hpp({ whitelist: [ 'filter' ] })); -- WHITELISTING
 // Parse cookies
