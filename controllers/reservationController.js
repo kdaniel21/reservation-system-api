@@ -22,7 +22,7 @@ const createReservationObject = (body, userId) => {
 const cloneObject = (obj) => JSON.parse(JSON.stringify(obj));
 
 exports.getAllReservations = factoryHandler.getAll(Reservation, {
-  populate: { path: 'user', select: 'name' },
+  select: '-createdAt -updatedAt',
 });
 
 exports.createReservation = catchAsync(async (req, res, next) => {
@@ -54,7 +54,12 @@ exports.updateReservation = catchAsync(async (req, res, next) => {
     const endsAt = req.body.endsAt || reservation.endsAt;
     const place = req.body.place || reservation.place;
 
-    const isAvailable = await isTimeAvailable({ startsAt, endsAt, place });
+    const isAvailable = await isTimeAvailable({
+      startsAt,
+      endsAt,
+      place,
+      _id: req.params.id,
+    });
     if (!isAvailable) return next('Time not available.', 400);
   }
 
