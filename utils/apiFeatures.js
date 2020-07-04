@@ -35,7 +35,7 @@ module.exports = class APIFeatures {
   limit() {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.replace(/,/g, ' ');
-      this.query = this.query.limit(fields);
+      this.query = this.query.select(fields);
     } else {
       this.query = this.query.select('-__v');
     }
