@@ -20,10 +20,10 @@ const loginUser = async (user, statusCode, res) => {
   // Set refresh token cookie
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.REFRESH_TOKEN_EXPIRES + 24 * 60 * 60 * 1000
+      Date.now() + process.env.REFRESH_TOKEN_EXPIRES * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
+    // secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
   };
   res.cookie('refreshToken', refreshToken, cookieOptions);
 
@@ -106,6 +106,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   if (!decodedToken) return next(sendUnauthorized());
 
+  console.log(token);
+  console.log(decodedToken);
+
   // Get corresponding user
   const user = await User.findById(decodedToken.id);
   if (!user) return next(sendUnauthorized());
@@ -123,7 +126,8 @@ exports.restrictTo = (...roles) => (req, res, next) => {
 exports.refreshToken = catchAsync(async (req, res, next) => {
   // Check if refreshToken and accessToken was provided
   const { accessToken } = req.body;
-  const { refreshToken } = req.body || req.cookies;
+  const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
   if (!refreshToken)
     return next(new AppError('No refresh token was provided', 400));
 
@@ -158,12 +162,12 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
 
     user = await User.findOne({
       refreshTokens: { $elemMatch: { token: hashedToken } },
-    });
+    }).select('+refreshTokens');
+
+    if (!user) return next(new AppError('Refresh token not valid!', 401));
 
     decodedAccessToken = { _id: user._id, role: user.role };
   }
-
-  if (!user) return next(new AppError('Refresh token not valid!', 401));
 
   // Create lastActive timestamp
   await user.markAsActive();
@@ -175,6 +179,16 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
     refreshToken,
     user.refreshTokens
   );
+
+  // Set refresh token cookie
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.REFRESH_TOKEN_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    // secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
+  };
+  res.cookie('refreshToken', newRefreshToken, cookieOptions);
 
   res.status(200).json({
     status: 'success',
