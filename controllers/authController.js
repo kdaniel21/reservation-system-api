@@ -106,8 +106,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   if (!decodedToken) return next(sendUnauthorized());
 
+  console.log(decodedToken);
+
   // Get corresponding user
-  const user = await User.findById(decodedToken.id);
+  const user = await User.findById(decodedToken._id);
   if (!user) return next(sendUnauthorized());
 
   // User authorized
@@ -163,7 +165,7 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
 
     if (!user) return next(new AppError('Refresh token not valid!', 401));
 
-    decodedAccessToken = { _id: user._id, role: user.role };
+    decodedAccessToken = { id: user._id, role: user.role };
   }
 
   // Create lastActive timestamp
