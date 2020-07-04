@@ -106,9 +106,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   if (!decodedToken) return next(sendUnauthorized());
 
-  console.log(token);
-  console.log(decodedToken);
-
   // Get corresponding user
   const user = await User.findById(decodedToken.id);
   if (!user) return next(sendUnauthorized());
