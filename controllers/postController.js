@@ -3,8 +3,8 @@ const factoryHandler = require('./factoryHandler');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-// Populate options
-const populate = { path: 'user', select: 'name photo' };
+// Default populate options
+const populate = { path: 'author', select: 'name photo' };
 
 exports.getAllPublicPosts = factoryHandler.getAll(Post, {
   queryCondition: { public: true },
