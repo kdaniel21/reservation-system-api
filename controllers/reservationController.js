@@ -222,7 +222,7 @@ exports.checkAvailability = catchAsync(async (req, res, next) => {
 exports.getCurrentReservation = catchAsync(async (req, res, next) => {
   const currentReservations = await Reservation.find({
     $and: [
-      { endsAt: { gt: Date.now() } },
+      { endsAt: { $gt: Date.now() } },
       { startsAt: { $lte: Date.now() } },
       { active: true },
     ],
