@@ -12,6 +12,7 @@ exports.getAllPublicPosts = factoryHandler.getAll(Post, {
     publicAt: { $lte: Date.now() },
   },
   populate,
+  defaultSortBy: '-publicAt',
 });
 
 exports.getAllPosts = factoryHandler.getAll(Post, { populate });
