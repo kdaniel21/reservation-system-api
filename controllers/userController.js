@@ -9,4 +9,6 @@ exports.selectCurrentUser = (req, res, next) => {
 
 exports.getUser = factoryHandler.getOne(User);
 exports.updateUser = factoryHandler.updateOne(User);
-exports.getAllUsers = factoryHandler.getAll(User);
+exports.getAllUsers = factoryHandler.getAll(User, {
+  populate: { path: 'invitedBy', select: 'name' },
+});
