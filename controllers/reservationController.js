@@ -218,3 +218,18 @@ exports.checkAvailability = catchAsync(async (req, res, next) => {
     available: isAvailable,
   });
 });
+
+exports.getCurrentReservation = catchAsync(async (req, res, next) => {
+  const currentReservations = await Reservation.find({
+    $and: [
+      { endsAt: { gt: Date.now() } },
+      { startsAt: { $lte: Date.now() } },
+      { active: true },
+    ],
+  }).populate({ path: 'user', select: 'name' });
+
+  res.status(200).json({
+    status: 'success',
+    data: currentReservations,
+  });
+});

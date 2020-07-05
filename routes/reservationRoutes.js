@@ -12,6 +12,7 @@ router
   .get(reservationController.getAllReservations)
   .post(reservationController.createReservation);
 
+router.get('/current', reservationController.getCurrentReservation);
 router.post('/available', reservationController.checkAvailability);
 
 router
