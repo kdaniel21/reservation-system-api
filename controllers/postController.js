@@ -7,7 +7,10 @@ const AppError = require('../utils/appError');
 const populate = { path: 'author', select: 'name photo' };
 
 exports.getAllPublicPosts = factoryHandler.getAll(Post, {
-  queryCondition: { public: true },
+  queryCondition: {
+    public: true,
+    publicAt: { $lte: Date.now() },
+  },
   populate,
 });
 
@@ -18,6 +21,7 @@ exports.getPost = catchAsync(async (req, res, next) => {
   const post = await Post.findOne({
     slug: req.params.slug,
     public: true,
+    publicAt: { $lte: Date.now() },
   }).populate(populate);
 
   if (!post) return next(new AppError('Post not found!', 404));
