@@ -61,6 +61,7 @@ module.exports = class Email {
     const html = pug.renderFile(`${__dirname}/email/${template}.pug`, {
       ...this.templateData,
       firstName: this.firstName,
+      url: this.url,
     });
 
     const text = htmlToText.fromString(html);
