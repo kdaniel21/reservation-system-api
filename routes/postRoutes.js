@@ -16,10 +16,11 @@ router.get('/:slug', postController.getPost);
 
 router.use(authController.restrictTo('admin'));
 
-router.post('/', postController.createPost);
+router.post('/', postController.addAuthor, postController.createPost);
 router.get('/all', postController.getAllPosts);
 router
-  .route('/:id')
+  .route('/edit/:id')
+  .get(postController.getPostDetails)
   .delete(postController.deletePost)
   .patch(postController.updatePost);
 

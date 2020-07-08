@@ -10,15 +10,22 @@ router.use(
   authController.accessOnlyOwnDocument(Contact)
 );
 
-router.post('/', contactController.createContact);
-router.get('/:id', contactController.getContact);
+router
+  .route('/')
+  .post(contactController.createContact)
+  .get(contactController.getAllContacts);
+
+router
+  .route('/:id')
+  .get(contactController.getContact)
+  .patch(contactController.markAsSolved, contactController.updateContact);
+
 router
   .route('/:id/messages')
   .get(contactController.getMessages)
   .post(contactController.sendMessage);
 
 router.use(authController.restrictTo('admin'));
-router.get('/', contactController.getAllContacts);
 router.delete('/:id', contactController.deleteContact);
 
 module.exports = router;
