@@ -1,5 +1,7 @@
 ## Config file should contain:
 
+### (config.env by default)
+
 - NODE_ENV (values: development or production)
 - DB_HOST (value: MongoDB connection string)
 
