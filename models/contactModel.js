@@ -18,6 +18,7 @@ const contactSchema = new mongoose.Schema({
     ref: 'User',
   },
   messages: [messageSchema],
+  createdAt: { type: Date, default: Date.now() },
 });
 
 contactSchema.pre('save', function (next, user) {
