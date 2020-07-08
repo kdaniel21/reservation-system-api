@@ -45,6 +45,8 @@ const reservationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+reservationSchema.index({ startsAt: 1, endsAt: 1, place: 1 });
+
 const Reservation = mongoose.model('Reservation', reservationSchema);
 
 module.exports = Reservation;
