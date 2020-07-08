@@ -57,7 +57,7 @@ module.exports = class Email {
   }
 
   async sendEmail(template, subject) {
-    const html = pug.renderFile(`${__dirname}/email/${template}`);
+    const html = pug.renderFile(`${__dirname}/email/${template}.pug`);
     const text = htmlToText.fromString(html);
 
     const mailOptions = {
