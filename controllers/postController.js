@@ -33,8 +33,15 @@ exports.getPost = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getPostDetails = factoryHandler.getOne(Post, { populate });
+
 exports.createPost = factoryHandler.createOne(Post, { addUser: true });
 
 exports.deletePost = factoryHandler.deleteOne(Post);
 
 exports.updatePost = factoryHandler.updateOne(Post);
+
+exports.addAuthor = (req, res, next) => {
+  req.body.author = req.user._id;
+  next();
+};

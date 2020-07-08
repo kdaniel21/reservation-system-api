@@ -8,6 +8,7 @@ const postSchema = new mongoose.Schema(
     text: String,
     slug: String,
     public: { type: Boolean, default: false },
+    publicAt: Date,
     author: { type: mongoose.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
