@@ -14,9 +14,23 @@ exports.getContact = factoryHandler.getOne(Contact, {
 
 exports.getMessages = factoryHandler.getOne(Contact, { select: 'messages' });
 
-exports.getAllContacts = factoryHandler.getAll(Contact, {
-  populate: { path: 'user', select: 'name' },
-  select: '-messages',
+// exports.getAllContacts = factoryHandler.getAll(Contact, {
+//   populate: { path: 'user', select: 'name' },
+//   select: '-messages',
+// });
+exports.getAllContacts = catchAsync(async (req, res, next) => {
+  let query = Contact.find({});
+
+  if (req.user.role !== 'admin') {
+    query = query.find({ user: req.user });
+  }
+
+  const contacts = await query.populate({ path: 'user', select: 'name email' });
+
+  res.status(200).json({
+    status: 'success',
+    data: contacts,
+  });
 });
 
 exports.deleteContact = factoryHandler.deleteOne(Contact);
@@ -31,9 +45,6 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
   // Push to the messages array
   const message = await Contact.findByIdAndUpdate(
     req.params.id,
-    // {
-    //   messages: { $push: msg },
-    // },
     {
       $push: { messages: msg },
     },
@@ -46,3 +57,19 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
     message,
   });
 });
+
+exports.markAsSolved = (req, res, next) => {
+  // Admins can update the whole doc
+  if (req.user.role === 'admin') next();
+
+  // Normal user can only update the solved property
+  const numOfUpdates = Object.keys(req.body).length;
+  if (!!req.body.closed && numOfUpdates === 1) next();
+
+  res.status(401).json({
+    status: 'fail',
+    message: 'You are not allowed to modify this document.',
+  });
+};
+
+exports.updateContact = factoryHandler.updateOne(Contact);
