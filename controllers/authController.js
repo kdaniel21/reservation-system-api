@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const Invitation = require('../models/invitationModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const sendEmail = require('../utils/sendEmail');
+const Email = require('../utils/sendEmail');
 
 // HELPER FUNCTIONS
 const signJWT = (payload) => {
@@ -70,6 +70,9 @@ exports.register = catchAsync(async (req, res, next) => {
     passwordConfirm,
     invitedBy: invitation.createdBy,
   });
+
+  // Send confirmation email
+  await new Email(newUser, `${process.env.SITE_URL}`);
 
   // Deactivate invitation
   await invitation.deactivate();
@@ -206,7 +209,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const token = await user.generatePasswordResetToken();
 
   // Send email
-  await sendEmail.sendPasswordReset(user.email, user.name, token);
+  await new Email(
+    user,
+    `${process.env.SITE_URL}/auth/reset-password/${token}`
+  ).sendPasswordResetEmail();
 
   res.status(200).json({
     status: 'success',

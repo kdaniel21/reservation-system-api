@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const generateToken = require('../utils/generateToken');
 const factoryHandler = require('./factoryHandler');
 
-const sendEmail = require('../utils/sendEmail');
+const Email = require('../utils/sendEmail');
 const AppError = require('../utils/appError');
 
 exports.createInvitation = catchAsync(async (req, res, next) => {
@@ -16,14 +16,12 @@ exports.createInvitation = catchAsync(async (req, res, next) => {
     token: hashedToken,
   };
 
-  const newInvitation = await Invitation.create(invitation);
+  await Invitation.create(invitation);
 
-  // Send email to the user
-  await sendEmail.sendInvitation(
-    newInvitation.userEmail,
-    newInvitation.userName,
-    token
-  );
+  await new Email(
+    req.user,
+    `${process.env.SITE_URL}/auth/register/${token}`
+  ).sendInvitationMail();
 
   res.status(200).json({
     status: 'success',
