@@ -18,10 +18,9 @@ exports.createInvitation = catchAsync(async (req, res, next) => {
 
   await Invitation.create(invitation);
 
-  await new Email(
-    req.user,
-    `${process.env.SITE_URL}/auth/register/${token}`
-  ).sendInvitationMail();
+  await new Email(req.body, `${process.env.SITE_URL}/auth/register/${token}`, {
+    invitedBy: req.user.name,
+  }).sendInvitationMail();
 
   res.status(200).json({
     status: 'success',

@@ -30,11 +30,12 @@ const pug = require('pug');
 
 // EMAIL HANDLER
 module.exports = class Email {
-  constructor(user, url) {
+  constructor(user, url, templateData) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
     this.from = `${process.env.EMAIL_NAME} <${process.env.EMAIL_FROM}>`;
+    this.templateData = templateData;
   }
 
   newTransport() {
@@ -57,7 +58,11 @@ module.exports = class Email {
   }
 
   async sendEmail(template, subject) {
-    const html = pug.renderFile(`${__dirname}/email/${template}.pug`);
+    const html = pug.renderFile(`${__dirname}/email/${template}.pug`, {
+      ...this.templateData,
+      firstName: this.firstName,
+    });
+
     const text = htmlToText.fromString(html);
 
     const mailOptions = {
@@ -67,7 +72,6 @@ module.exports = class Email {
       text,
       html,
     };
-
     await this.newTransport().sendMail(mailOptions);
   }
 
