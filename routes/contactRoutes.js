@@ -1,14 +1,10 @@
 const express = require('express');
 const authController = require('../controllers/authController');
 const contactController = require('../controllers/contactController');
-const Contact = require('../models/contactModel');
 
 const router = express.Router();
 
-router.use(
-  authController.protect,
-  authController.accessOnlyOwnDocument(Contact)
-);
+router.use(authController.protect);
 
 router
   .route('/')

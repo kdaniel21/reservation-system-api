@@ -158,12 +158,6 @@ userSchema.methods.generateRefreshToken = async function () {
       Date.now() + process.env.REFRESH_TOKEN_EXPIRES * 24 * 60 * 60 * 1000,
   };
 
-  // let refreshTokens = await this.model('User')
-  //   .findById(this._id)
-  //   .select('refreshTokens');
-  // console.log('Original: ', refreshTokens);
-  // // Save hashed refresh token to the DB
-  // if (!refreshTokens.refreshTokens) refreshTokens = [];
   await this.model('User').findByIdAndUpdate(this._id, {
     $push: { refreshTokens: refreshToken },
   });

@@ -23,7 +23,7 @@ const loginUser = async (user, statusCode, res) => {
       Date.now() + process.env.REFRESH_TOKEN_EXPIRES * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    // secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
+    secure: process.env.NODE_ENV === 'production', // HTTPS only only for production
   };
   res.cookie('refreshToken', refreshToken, cookieOptions);
 
@@ -161,7 +161,9 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
       .digest('hex');
 
     user = await User.findOne({
-      refreshTokens: { $elemMatch: { token: hashedToken } },
+      refreshTokens: {
+        $elemMatch: { token: hashedToken, expiration: { $gte: Date.now() } },
+      },
     }).select('+refreshTokens');
 
     if (!user) return next(new AppError('Refresh token not valid!', 401));
