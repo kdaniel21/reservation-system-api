@@ -19,13 +19,10 @@ exports.getMessages = factoryHandler.getOne(Contact, { select: 'messages' });
 //   select: '-messages',
 // });
 exports.getAllContacts = catchAsync(async (req, res, next) => {
-  let query = Contact.find({});
-
-  if (req.user.role !== 'admin') {
-    query = query.find({ user: req.user });
-  }
-
-  const contacts = await query.populate({ path: 'user', select: 'name email' });
+  const contacts = await Contact.find({ user: req.user }).populate({
+    path: 'user',
+    select: 'name email',
+  });
 
   res.status(200).json({
     status: 'success',
