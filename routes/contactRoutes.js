@@ -9,7 +9,13 @@ router.use(authController.protect);
 router
   .route('/')
   .post(contactController.createContact)
-  .get(contactController.getAllContacts);
+  .get(contactController.getContactsOfUser);
+
+router.get(
+  '/all',
+  authController.restrictTo('admin'),
+  contactController.getAllContacts
+);
 
 router
   .route('/:id')

@@ -14,11 +14,11 @@ exports.getContact = factoryHandler.getOne(Contact, {
 
 exports.getMessages = factoryHandler.getOne(Contact, { select: 'messages' });
 
-// exports.getAllContacts = factoryHandler.getAll(Contact, {
-//   populate: { path: 'user', select: 'name' },
-//   select: '-messages',
-// });
-exports.getAllContacts = catchAsync(async (req, res, next) => {
+exports.getAllContacts = factoryHandler.getAll(Contact, {
+  populate: { path: 'user', select: 'name email' },
+});
+
+exports.getContactsOfUser = catchAsync(async (req, res, next) => {
   const contacts = await Contact.find({ user: req.user }).populate({
     path: 'user',
     select: 'name email',
