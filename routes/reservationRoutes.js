@@ -20,9 +20,8 @@ router
   .post(reservationController.createRecurringReservation)
   .get(reservationController.getAllRecurringReservations);
 
-router.use(authController.accessOnlyOwnDocument(Reservation));
 router
-  .route('/:id')
+  .route('/:id', authController.accessOnlyOwnDocument(Reservation))
   .get(reservationController.getReservation)
   .patch(reservationController.updateReservation)
   .delete(
@@ -31,7 +30,7 @@ router
   );
 
 router
-  .route('/recurring/:id')
+  .route('/recurring/:id', authController.accessOnlyOwnDocument(Reservation))
   .patch(reservationController.updateRecurringReservation)
   .delete(reservationController.deleteRecurringReservation);
 
